@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pharmacy App</title>
+    <style>
+        /* any html tag with class="hidden" make it invisible */
+        .hidden {
+            display: none;
+        }
+
+        .box {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Pharmacy Management</h1>
+
+    <!-- 1. LOGIN / REGISTER SECTION -->
+    <div id="auth-section" class="box">
+        <h3>Login or Register</h3>
+        <input type="text" id="username" placeholder="Username"><br><br>
+        <input type="password" id="password" placeholder="Password"><br><br>
+        <button onclick="handleAuth('login')">Login</button>
+        <button onclick="handleAuth('register')">Register</button>
+        <p id="auth-msg"></p>
+    </div>
+
+    <!-- 2. MEDICINES SECTION (Hidden until login) -->
+    <div id="app-section" class="hidden">
+        <button onclick="logout()">Logout</button>
+        <div class="box">
+            <h3>Add New Medicine</h3>
+            <input type="text" id="med-name" placeholder="Name">
+            <input type="number" id="med-price" placeholder="Price">
+            <input type="text" id="med-description" placeholder="Description">
+            <input type="date" id="med-expiry" placeholder="Expiry Date">
+            <input type="checkbox" id="med-prescription" placeholder="Prescription">
+            <input type="number" id="med-stock" placeholder="Stock">
+            <button onclick="addMedicine()">Add</button>
+        </div>
+        <h3>Medicine List</h3>
+        <div id="medicines-list"></div>
+    </div>
+
+    <div id="sell-section" class="hidden box">
+        <h3>sell medicines</h3>
+        <input type="text" id="buyer-name" placeholder="Buyer name">
+        <input type="text" id="buyer-medicine" placeholder="Medicines">
+        <input type="number" id="buyer-quantity" placeholder="Quantity">
+        <button onclick="sell()">Sell</button>
+    </div>
+
+    <script>
+
+        const API_URL = "http://localhost:3000";
+
+        async function handleAuth(type) {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
+            try {
+                const res = await fetch(`${API_URL}/${type}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: user, password: pass })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (type === 'login') {
+                        localStorage.setItem('token', data.token);
+                        showApp();
+                    } else {
+                        document.getElementById('auth-msg').innerText = "Registered! Now try logging in.";
+                    }
+                } else {
+                    alert(data.message || "Login failed");
+                }
+            } catch (err) {
+                console.error("Connection error:", err);
+                alert("Could not connect to server. Is the backend running?");
+            }
+        }
+
+        function showApp() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('app-section').classList.remove('hidden');
+            document.getElementById('sell-section').classList.remove('hidden');
+            loadMedicines();
+        }
+
+        async function loadMedicines() {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${API_URL}/medicines`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (res.status === 401 || res.status === 403) return logout();
+
+            const data = await res.json();
+            const list = document.getElementById('medicines-list');
+            list.innerHTML = data.map(m => `
+            <p style="border-bottom: 1px solid #eee; padding: 5px;">
+                <strong>${m.name}</strong> - $${m.price} 
+                <button onclick="deleteMed(${m.id})">Delete</button>
+            </p>
+        `).join('');
+        }
+
+        // --- ADD THIS: The missing Add function ---
+        async function addMedicine() {
+            const name = document.getElementById('med-name').value;
+            const price = document.getElementById('med-price').value;
+            const description = document.getElementById('med-description').value;
+            const expiry_date = document.getElementById('med-expiry').value;
+            const prescription = document.getElementById('med-prescription').checked;
+            const stock = document.getElementById('med-stock').value;
+            const token = localStorage.getItem('token');
+
+            await fetch(`${API_URL}/add-medicine`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name, price,
+                    description,
+                    expiry_date,
+                    prescription,
+                    stock
+                })
+            });
+
+            document.getElementById('med-name').value = '';
+            document.getElementById('med-price').value = '';
+            document.getElementById('med-description').value = '';
+            document.getElementById('med-expiry').value = '';
+            document.getElementById('med-prescription').checked = false;
+            document.getElementById('med-stock').value = '';
+            loadMedicines();
+        }
+
+        async function sell() {
+            const name = document.getElementById('buyer-name').value;
+            const med = document.getElementById('buyer-medicine').value;
+            // Best practice: Convert quantity string from text input into a true Number
+            const quantity = parseInt(document.getElementById('buyer-quantity').value);
+            const token = localStorage.getItem('token');
+
+            await fetch(`${API_URL}/sell-medicine`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name, med, quantity
+                })
+            });
+
+            document.getElementById('buyer-name').value = '';
+            document.getElementById('buyer-medicine').value = '';
+            document.getElementById('buyer-quantity').value = '';
+
+            loadMedicines();
+        }
+
+        // --- ADD THIS: The missing Delete function ---
+        async function deleteMed(id) {
+            const token = localStorage.getItem('token');
+            if (confirm("Are you sure?")) {
+                await fetch(`${API_URL}/medicines/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                loadMedicines();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            location.reload();
+        }
+
+        if (localStorage.getItem('token')) showApp();
+
+
+    </script>
+</body>
+
+</html>

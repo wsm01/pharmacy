@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { Auth } from './components/Auth';
+import { MedicineList } from './components/MedicineList';
+import { AddMedicine } from './components/AddMedicine';
+import { SellMedicine } from './components/SellMedicine';
 
 export default function App() {
-  // 1. App State: Are we logged in?
-  // By default, we say "false".
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  // THE TRIGGER: This counter goes up by 1 every time we add or sell a medicine.
+  // Because MedicineList is watching this counter, it automatically repaints the screen!
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
-  // 2. The useEffect Hook: This runs ONE time when the user opens the page.
-  // This acts exactly like the line of code you had at the bottom of your HTML! 
-  // It checks if you left a token in the browser yesterday.
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -16,29 +18,35 @@ export default function App() {
     }
   }, []);
 
-  // 3. The Logout function
-  // We don't need location.reload() anymore, React instantly repaints the screen!
   function handleLogout() {
     localStorage.removeItem('token');
     setIsAuthenticated(false); 
   }
 
-  // 4. The Master JSX (The Architect)
+  // The Dashboard Layout
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
-      <h1>Pharmacy Management</h1>
+    <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '1000px', margin: '0 auto' }}>
+      <h1>Pharmacy Management Dashboard (React 1.0)</h1>
       
-      {/* This is a "Ternary Operator". It means: 
-          if (!isAuthenticated) draw the Auth box. 
-          : (else) draw the Dashboard! */}
-          
       {!isAuthenticated ? (
         <Auth onLoginSuccess={() => setIsAuthenticated(true)} />
       ) : (
         <div>
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={handleLogout} style={{float: "right", background: '#ff6b6b', color: 'white'}}>Logout</button>
+          <p>Welcome to your complete React frontend!</p>
           <hr />
-          <h2 style={{color: "green"}}>Welcome to the Dashboard! (We will build this next!)</h2>
+          
+          <div style={{ display: 'flex', gap: '20px' }}>
+            <div style={{ flex: 1 }}>
+              <AddMedicine onMedicineAdded={() => setRefreshCounter(c => c + 1)} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <SellMedicine onMedicineSold={() => setRefreshCounter(c => c + 1)} />
+            </div>
+          </div>
+          
+          <hr />
+          <MedicineList refreshTrigger={refreshCounter} />
         </div>
       )}
       

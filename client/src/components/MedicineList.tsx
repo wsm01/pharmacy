@@ -1,8 +1,25 @@
 import { useState, useEffect } from 'react';
 
-// 1. INTERFACES (TypeScript Magic)
-// This tells our code exactly what a "Medicine" looks like.
-// This prevents us from making typos like typing m.prece instead of m.price!
+// === MINIMALIST SVG ICONS ===
+const SearchIcon = () => (
+    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF'}}>
+        <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>
+    </svg>
+);
+const EditIcon = () => (
+    <svg className="action-icon primary" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+    </svg>
+);
+const TrashIcon = () => (
+    <svg className="action-icon danger" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+    </svg>
+);
+const PlusIcon = () => (
+    <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+);
+
 interface Medicine {
   id: number;
   name: string;
@@ -10,18 +27,14 @@ interface Medicine {
   stock: number;
 }
 
-// We will use this refreshTrigger later to force the list to update when we add a new item!
-interface MedicineListProps {
-  refreshTrigger: number;
-}
-
-export function MedicineList({ refreshTrigger }: MedicineListProps) {
-  // 2. STATE: This holds our array of medicine objects
-  // Notice the <Medicine[]> syntax. We are strictly guarding this array!
+export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: number, onAddNew: () => void }) {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
+  // NEW STATE: Search & Filter Memory
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filter, setFilter] = useState("all"); 
+  
   const API_URL = "http://localhost:3000";
 
-  // 3. THE FETCH LOGIC
   async function loadMedicines() {
     const token = localStorage.getItem('token');
     if (!token) return;
@@ -29,57 +42,131 @@ export function MedicineList({ refreshTrigger }: MedicineListProps) {
     const res = await fetch(`${API_URL}/medicines`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
-
-    if (res.status === 401 || res.status === 403) {
-      alert("Session expired, please refresh page"); // Let parent handle true logout later
+    
+    if (!res.ok) {
+      alert("Session expired or error fetching data. Please refresh.");
       return;
     }
 
     const data = await res.json();
-    setMedicines(data); // This instantly paints the screen with the new array!
+    setMedicines(data);
   }
 
-  // 4. THE USE-EFFECT (The Trigger)
-  // The array [refreshTrigger] at the end means: 
-  // "Run loadMedicines() when the page opens, AND run it again ANYTIME refreshTrigger changes!"
-  useEffect(() => {
-    loadMedicines();
-  }, [refreshTrigger]);
+  useEffect(() => { loadMedicines(); }, [refreshTrigger]);
 
-  // 5. THE DELETE LOGIC
   async function deleteMed(id: number) {
-    const token = localStorage.getItem('token');
-    if (window.confirm("Are you sure?")) {
-      await fetch(`${API_URL}/medicines/${id}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      loadMedicines(); // Automatically fetch the fresh list after deleting!
+    if (window.confirm("Are you sure you want to permanently delete this medicine record?")) {
+        await fetch(`${API_URL}/medicines/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+        });
+        loadMedicines();
     }
   }
 
-  // 6. THE JSX (map instead of innerHTML)
+  // === LOCAL SEARCH ALGORITHM ===
+  const filteredMedicines = medicines.filter(m => {
+      const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilter = filter === 'low' ? m.stock <= 5 : true;
+      return matchesSearch && matchesFilter;
+  });
+
   return (
-    <div className="box" style={{ border: "1px solid #ccc", padding: "15px", margin: "10px 0" }}>
-      <h3>Medicine List</h3>
+    <div className="card">
+        
+       {/* SAAS HEADER CONTROLS (Improved Padding & Alignment) */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px", gap: "16px", flexWrap: "wrap" }}>
+            
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: "300px" }}>
+                {/* Search Bar */}
+                <div style={{ position: "relative", maxWidth: "320px", flex: 1 }}>
+                    <SearchIcon />
+                    <input 
+                        type="text" 
+                        placeholder="Search specific inventory..." 
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        style={{ width: "100%", padding: "10px 12px 10px 40px", border: "1px solid #D1D5DB", borderRadius: "6px", marginBottom: 0, height: "42px" }}
+                    />
+                </div>
+                
+                {/* Dropdown Filter */}
+                <select 
+                    value={filter} 
+                    onChange={e => setFilter(e.target.value)}
+                    style={{ height: "42px", padding: "0 16px", border: "1px solid #D1D5DB", borderRadius: "6px", backgroundColor: "#fff", color: "var(--text-main)", outline: "none", cursor: "pointer", fontSize: "14px" }}
+                >
+                    <option value="all">All Inventory</option>
+                    <option value="low">Critical Low Stock</option>
+                </select>
+            </div>
 
-      {medicines.length === 0 ? <p>No medicines found.</p> : null}
-
-      {/* React hates .innerHTML. Instead we use .map() to loop over the array directly! */}
-      {medicines.map((m) => (
-        <div key={m.id} style={{ borderBottom: "1px solid #eee", padding: "10px" }}>
-          <strong>{m.name}</strong> - ${m.price}
-          <span style={{ color: 'gray', marginLeft: '10px' }}>(Stock: {m.stock})</span>
-
-          <button
-            onClick={() => deleteMed(m.id)}
-            style={{ marginLeft: "10px", background: "lightcoral" }}
-          >
-            Delete
-          </button>
+            {/* Smart Action Routing Button */}
+            <button onClick={onAddNew} className="btn btn-primary" style={{ display: "flex", alignItems: "center", justifyItems: "center", gap: "8px", height: "42px" }}>
+                <PlusIcon />
+                Add New Medicine
+            </button>
         </div>
-      ))}
 
+      {/* RENDER TABLE LOGIC */}
+      {medicines.length === 0 ? (
+        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>No medicines found in the whole system. Add some stock to get started!</p>
+      ) : filteredMedicines.length === 0 ? (
+        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>No exact results found for "{searchQuery}". Try clearing filters.</p>
+      ) : (
+        <div style={{ overflowX: "auto" }}>
+            {/* HTML constraints removed to rely purely on CSS Framework rules! */}
+            <table className="data-table">
+                <thead>
+                    <tr>
+                    <th style={{ width: "40%", textAlign: "left" }}>Medicine Product Name</th>
+                    <th style={{ textAlign: "center" }}>Unit Price</th>
+                    <th style={{ textAlign: "center" }}>Volume Stock Level</th>
+                    <th style={{ textAlign: "right" }}>Database Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filteredMedicines.map((m) => (
+                    <tr key={m.id} style={{ transition: "background 0.2s" }}>
+                        
+                        <td style={{ fontWeight: 600, color: "var(--text-main)", textAlign: "left" }}>{m.name}</td>
+                        
+                        <td style={{ textAlign: "center", color: "var(--text-muted)", fontWeight: 500 }}>
+                            ${Number(m.price).toFixed(2)}
+                        </td>
+                        
+                        <td style={{ textAlign: "center" }}>
+                            <span className={`badge ${m.stock <= 5 ? 'low' : 'ok'}`}>
+                                {m.stock <= 5 ? 'Warning: Low (' + m.stock + ')' : m.stock + ' Un.'}
+                            </span>
+                        </td>
+                        
+                        <td style={{ textAlign: "right", paddingRight: "10px" }}>
+                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px", alignItems: "center" }}>
+                                <button 
+                                    onClick={() => alert('The backend API for Editing is not built yet! This is just a UI placeholder.')} 
+                                    style={{ background: "transparent", border: "none", padding: 0 }} 
+                                    title="Edit Medicine"
+                                >
+                                    <EditIcon />
+                                </button>
+                                
+                                <button 
+                                    onClick={() => deleteMed(m.id)} 
+                                    style={{ background: "transparent", border: "none", padding: 0 }} 
+                                    title="Delete Medicine"
+                                >
+                                    <TrashIcon />
+                                </button>
+                            </div>
+                        </td>
+                        
+                    </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+      )}
     </div>
   );
 }

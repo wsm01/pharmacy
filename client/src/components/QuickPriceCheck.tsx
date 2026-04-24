@@ -5,7 +5,7 @@ interface CartItem {
   id: string; // Unique ID to handle UI removals
   medName: string;
   quantity: number;
-  unitPrice: number; // NEW: Track the financial price securely!
+  unitPrice: number; // Track the financial price securely!
 }
 
 // Mirror the database structure
@@ -16,18 +16,15 @@ interface Medicine {
   stock: number;
 }
 
-export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void }) {
-  // Global Transaction State
-  const [buyerName, setBuyerName] = useState("");
-  
+export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void }) {
   // Shopping Cart State
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // === NEW INVENTORY STATE ===
+  // === INVENTORY STATE ===
   const [inventory, setInventory] = useState<Medicine[]>([]);
   
-  // === NEW AUTOCOMPLETE STATE ===
+  // === AUTOCOMPLETE STATE ===
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedMed, setSelectedMed] = useState<Medicine | null>(null);
@@ -70,8 +67,8 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
   function handleAddToCart(e: React.FormEvent) {
       e.preventDefault(); 
       
-      if (!buyerName || !selectedMed || !quantity) {
-          alert("Please fill in Buyer, clearly select a Medicine from the dropdown list, and specify Quantity.");
+      if (!selectedMed || !quantity) {
+          alert("Please select a Medicine from the dropdown list and specify Quantity.");
           return;
       }
 
@@ -142,7 +139,7 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
                     'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    name: buyerName, 
+                    name: "Quick Sale", // Anonymous/Quick Sale buyer name
                     med: item.medName,
                     quantity: item.quantity
                 })
@@ -150,7 +147,7 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
 
             if (!res.ok) {
                 const errBody = await res.text();
-                errorMessages.push(`Failed to sell ${item.medName}: ${errBody}`);
+                errorMessages.push(`Failed to process ${item.medName}: ${errBody}`);
                 allSuccessful = false;
             }
         } catch (err) {
@@ -166,10 +163,17 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
         onMedicineSold(); // Refresh dashboard anyway to show whatever DID succeed
     } else {
         // 100% Success Reset!
-        setBuyerName(""); 
         setCart([]);
         onMedicineSold(); 
     }
+  }
+
+  // Reset function to clear the cart entirely
+  function handleReset() {
+      setCart([]);
+      setSelectedMed(null);
+      setSearchQuery("");
+      setQuantity("");
   }
 
   // Live filter engine for the Autocomplete
@@ -181,21 +185,17 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
   return (
     <div className="card" style={{ maxWidth: "700px", overflow: "visible" }}>
         
+      <div style={{ marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid var(--border)" }}>
+          <h3 style={{ margin: 0, fontSize: "18px", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
+              🔍 Quick Price Check & Sale
+          </h3>
+          <p style={{ margin: "8px 0 0 0", color: "var(--text-muted)", fontSize: "14px" }}>
+              Check prices, build a cart, and process a sale without needing a Patient Name.
+          </p>
+      </div>
+
       {/* 1. ADD TO CART FORM */}
       <form onSubmit={handleAddToCart}>
-        <div style={{ marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid var(--border)" }}>
-            <label>Buyer / Patient Name</label>
-            <input 
-                type="text" 
-                placeholder="John Doe" 
-                value={buyerName} 
-                onChange={e => setBuyerName(e.target.value)} 
-                required 
-                disabled={cart.length > 0} 
-                style={{ background: cart.length > 0 ? "#F3F4F6" : "white" }}
-            />
-        </div>
-
         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", position: "relative" }}>
             
             {/* THE AUTOCOMPLETE ENGINE UI */}
@@ -210,7 +210,7 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
                              <span style={{ fontSize: "12px", color: selectedMed.stock <= 5 ? "var(--danger)" : "var(--text-muted)", fontWeight: 500 }}>
                                 Stock: {selectedMed.stock}
                              </span>
-                             <button type="button" onClick={() => { setSelectedMed(null); setSearchQuery(""); }} style={{ background: "var(--danger)", border: "none", color: "white", cursor: "pointer", fontWeight: "bold", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyItems: "center" }} title="Clear Selection">
+                             <button type="button" onClick={() => { setSelectedMed(null); setSearchQuery(""); }} style={{ background: "var(--danger)", border: "none", color: "white", cursor: "pointer", fontWeight: "bold", borderRadius: "50%", width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }} title="Clear Selection">
                                 ✕
                              </button>
                         </div>
@@ -279,10 +279,10 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
 
       {/* 2. SHOPPING CART UI WITH FINANCIALS */}
       {cart.length > 0 && (
-          <div style={{ background: "#F9FAFB", padding: "24px", borderRadius: "8px", border: "1px solid var(--border)" }}>
+          <div style={{ background: "#F9FAFB", padding: "24px", borderRadius: "8px", border: "1px solid var(--border)", marginBottom: "24px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                 <h3 style={{ margin: 0, fontSize: "16px", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
-                    🛒 Pending Transaction 
+                    🛒 Quick Sale Transaction 
                 </h3>
                 <span className="badge ok">{cart.length} items</span>
               </div>
@@ -323,10 +323,20 @@ export function SellMedicine({ onMedicineSold }: { onMedicineSold: () => void })
                 className="btn btn-success" 
                 style={{width: "100%", padding: "16px", fontSize: "16px", fontWeight: "bold", display: "flex", justifyContent: "center", gap: "8px"}}
               >
-                  {isProcessing ? "Processing Database Transactions..." : "Finalize Complete Sale"}
+                  {isProcessing ? "Processing Quick Sale..." : "Finalize Quick Sale"}
               </button>
           </div>
       )}
+
+      {/* ACTIONS */}
+      <button 
+          onClick={handleReset} 
+          className="btn" 
+          style={{ width: "100%", background: "#E5E7EB", color: "#374151", fontWeight: "bold", padding: "12px", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}
+      >
+          <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
+          Reset Cart
+      </button>
 
     </div>
   );

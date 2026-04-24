@@ -7,12 +7,12 @@ const SearchIcon = () => (
     </svg>
 );
 const EditIcon = () => (
-    <svg className="action-icon primary" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
     </svg>
 );
 const TrashIcon = () => (
-    <svg className="action-icon danger" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
     </svg>
 );
@@ -142,21 +142,25 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                         </td>
                         
                         <td style={{ textAlign: "right", paddingRight: "10px" }}>
-                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px", alignItems: "center" }}>
+                            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", alignItems: "center" }}>
                                 <button 
                                     onClick={() => alert('The backend API for Editing is not built yet! This is just a UI placeholder.')} 
-                                    style={{ background: "transparent", border: "none", padding: 0 }} 
+                                    style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "none", padding: "6px 10px", color: "var(--primary)", fontWeight: 600, fontSize: "13px", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }}
+                                    onMouseOver={e => e.currentTarget.style.background = "rgba(79, 70, 229, 0.1)"}
+                                    onMouseOut={e => e.currentTarget.style.background = "transparent"}
                                     title="Edit Medicine"
                                 >
-                                    <EditIcon />
+                                    <EditIcon /> Edit
                                 </button>
                                 
                                 <button 
                                     onClick={() => deleteMed(m.id)} 
-                                    style={{ background: "transparent", border: "none", padding: 0 }} 
+                                    style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "none", padding: "6px 10px", color: "var(--danger)", fontWeight: 600, fontSize: "13px", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }} 
+                                    onMouseOver={e => e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"}
+                                    onMouseOut={e => e.currentTarget.style.background = "transparent"}
                                     title="Delete Medicine"
                                 >
-                                    <TrashIcon />
+                                    <TrashIcon /> Delete
                                 </button>
                             </div>
                         </td>

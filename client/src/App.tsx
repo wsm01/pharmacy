@@ -3,11 +3,12 @@ import { Auth } from './components/Auth';
 import { MedicineList } from './components/MedicineList';
 import { AddMedicine } from './components/AddMedicine';
 import { SellMedicine } from './components/SellMedicine';
+import { QuickPriceCheck } from './components/QuickPriceCheck';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [refreshCounter, setRefreshCounter] = useState(0);
-  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'sell'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'sell' | 'price-check' | 'feedback' | 'settings'>('inventory');
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
@@ -21,36 +22,81 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      {/* SIDEBAR NAVIGATION */}
+      {/* COLLAPSING SIDEBAR NAVIGATION */}
       <div className="sidebar">
         <div className="sidebar-brand">
-          💊 Pulse Pharmacy
+          <span className="brand-icon">💊</span> 
+          <span className="brand-text">Pulse Pharmacy</span>
         </div>
+        
         <div className="sidebar-nav">
           <button 
             className={`sidebar-btn ${activeTab === 'inventory' ? 'active' : ''}`}
             onClick={() => setActiveTab('inventory')}
+            title="Inventory"
           >
-            Inventory Dashboard
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span className="sidebar-text">Inventory Dashboard</span>
           </button>
+          
           <button 
             className={`sidebar-btn ${activeTab === 'add' ? 'active' : ''}`}
             onClick={() => setActiveTab('add')}
+            title="Receive Stock"
           >
-            Receive Stock
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span className="sidebar-text">Receive Stock</span>
           </button>
+          
           <button 
             className={`sidebar-btn ${activeTab === 'sell' ? 'active' : ''}`}
             onClick={() => setActiveTab('sell')}
+            title="Point of Sale"
           >
-            Point of Sale
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            <span className="sidebar-text">Point of Sale</span>
+          </button>
+          
+          <button 
+            className={`sidebar-btn ${activeTab === 'price-check' ? 'active' : ''}`}
+            onClick={() => setActiveTab('price-check')}
+            title="Quick Price Check"
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            <span className="sidebar-text">Quick Price Check</span>
           </button>
         </div>
-        <div style={{ padding: '20px' }}>
-          <button className="btn btn-danger" style={{ width: '100%' }} onClick={() => {
-            localStorage.removeItem('token');
-            setIsAuthenticated(false);
-          }}>Sign Out</button>
+
+        <div className="sidebar-footer">
+          <button 
+            className={`sidebar-btn ${activeTab === 'feedback' ? 'active' : ''}`}
+            onClick={() => setActiveTab('feedback')}
+            title="Feedback"
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span className="sidebar-text">Feedback</span>
+          </button>
+          
+          <button 
+            className={`sidebar-btn ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+            title="Settings"
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span className="sidebar-text">Settings</span>
+          </button>
+
+          <button 
+            className="sidebar-btn danger" 
+            title="Sign Out"
+            onClick={() => {
+              localStorage.removeItem('token');
+              setIsAuthenticated(false);
+            }}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span className="sidebar-text">Sign Out</span>
+          </button>
         </div>
       </div>
 
@@ -84,6 +130,30 @@ export default function App() {
                 setActiveTab('inventory'); 
              }} />
            </>
+        )}
+        
+        {activeTab === 'price-check' && (
+           <>
+             <h2 className="page-title">Quick Price Check</h2>
+             <QuickPriceCheck onMedicineSold={() => {
+                setRefreshCounter(c => c + 1);
+                setActiveTab('inventory'); 
+             }} />
+           </>
+        )}
+
+        {activeTab === 'feedback' && (
+           <div className="card">
+             <h2 className="page-title">Feedback</h2>
+             <p style={{ color: "var(--text-muted)" }}>Feedback form coming soon.</p>
+           </div>
+        )}
+
+        {activeTab === 'settings' && (
+           <div className="card">
+             <h2 className="page-title">Settings</h2>
+             <p style={{ color: "var(--text-muted)" }}>Settings dashboard coming soon.</p>
+           </div>
         )}
       </div>
     </div>

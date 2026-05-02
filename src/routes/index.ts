@@ -3,7 +3,7 @@ dotenv.config();
 
 import { Client } from 'pg'; // Import the client class
 import express, { type Request, type Response, type NextFunction } from 'express';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import cors from 'cors';
 import jwt from 'jsonwebtoken'; // Import the req handler
 

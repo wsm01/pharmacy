@@ -190,6 +190,105 @@ app.delete('/medicines/:id', async (req, res) => {
 });
 
 
+// --- Settings API Endpoints ---
+
+// Pharmacy Details
+app.get('/pharmacy-details', async (req, res) => {
+    try {
+        const result = await client.query('SELECT * FROM pharmacy_details LIMIT 1');
+        res.json(result.rows[0] || {});
+    } catch (err) {
+        res.status(500).send("Error fetching pharmacy details");
+    }
+});
+
+app.post('/pharmacy-details', async (req, res) => {
+    const { name, address, contact_number } = req.body;
+    try {
+        const result = await client.query(
+            'UPDATE pharmacy_details SET name = $1, address = $2, contact_number = $3 RETURNING *',
+            [name, address, contact_number]
+        );
+        res.json({ message: "Pharmacy details updated successfully", data: result.rows[0] });
+    } catch (err) {
+        res.status(500).send("Error updating pharmacy details");
+    }
+});
+
+// User Profile
+app.get('/user-profile', async (req: any, res) => {
+    try {
+        // req.user comes from authenticateToken
+        const result = await client.query('SELECT id, username, email, display_name FROM users WHERE id = $1', [req.user.userId]);
+        if (result.rows.length === 0) return res.status(404).send("User not found");
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).send("Error fetching user profile");
+    }
+});
+
+app.put('/user-profile', async (req: any, res) => {
+    const { email, display_name } = req.body;
+    try {
+        const result = await client.query(
+            'UPDATE users SET email = $1, display_name = $2 WHERE id = $3 RETURNING id, username, email, display_name',
+            [email, display_name, req.user.userId]
+        );
+        res.json({ message: "Profile updated successfully", data: result.rows[0] });
+    } catch (err) {
+        res.status(500).send("Error updating user profile");
+    }
+});
+
+// Change Password
+app.put('/user-password', async (req: any, res) => {
+    const { oldPassword, newPassword } = req.body;
+    try {
+        const result = await client.query('SELECT password_hash FROM users WHERE id = $1', [req.user.userId]);
+        if (result.rows.length === 0) return res.status(404).send("User not found");
+        
+        const user = result.rows[0];
+        const isMatch = await bcrypt.compare(oldPassword, user.password_hash);
+        
+        if (!isMatch) return res.status(400).json({ message: "Incorrect old password" });
+        
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        await client.query('UPDATE users SET password_hash = $1 WHERE id = $2', [hashedNewPassword, req.user.userId]);
+        
+        res.json({ message: "Password updated successfully" });
+    } catch (err) {
+        res.status(500).send("Error updating password");
+    }
+});
+
+// Feedback
+app.post('/feedback', async (req: any, res) => {
+    const { category, subject, description } = req.body;
+    try {
+        const result = await client.query('SELECT username FROM users WHERE id = $1', [req.user.userId]);
+        const username = result.rows[0]?.username || 'Unknown';
+
+        await client.query(
+            'INSERT INTO feedback (user_id, username, category, subject, description) VALUES ($1, $2, $3, $4, $5)',
+            [req.user.userId, username, category, subject, description]
+        );
+        res.json({ message: "Feedback submitted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error submitting feedback");
+    }
+});
+
+// Sales History for Export
+app.get('/sales-history', async (req, res) => {
+    try {
+        const result = await client.query('SELECT * FROM sale_history ORDER BY id DESC');
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).send("Error fetching sales history");
+    }
+});
+
 export { app };
 
 /*app.listen(port, () => {

@@ -18,6 +18,48 @@
   --badge-low-text: #991B1B;
   --badge-ok-bg: #D1FAE5;
   --badge-ok-text: #065F46;
+  
+  --surface-bg: #F3F4F6;
+  --surface-hover: #F9FAFB;
+  --surface-disabled: #E5E7EB;
+  --input-bg: #FFFFFF;
+}
+
+body.dark-mode {
+  --bg-color: #111827;
+  --card-bg: #1F2937;
+  --text-main: #F9FAFB;
+  --text-muted: #9CA3AF;
+  --border: #374151;
+  --sidebar-bg: #111827;
+  --sidebar-text: #F3F4F6;
+  --badge-low-bg: #7F1D1D;
+  --badge-low-text: #FECACA;
+  --badge-ok-bg: #064E3B;
+  --badge-ok-text: #A7F3D0;
+  
+  --surface-bg: #374151;
+  --surface-hover: #4B5563;
+  --surface-disabled: #111827;
+  --input-bg: #1F2937;
+}
+
+/* Glassmorphism Components */
+.glass-card {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  padding: 24px;
+  transition: all 0.3s ease;
+}
+
+body.dark-mode .glass-card {
+  background: rgba(31, 41, 55, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
 body {
@@ -165,7 +207,7 @@ label {
   display: block;
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-main);
   margin-bottom: 6px;
 }
 
@@ -175,7 +217,9 @@ input[type="date"],
 input[type="password"] {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #D1D5DB;
+  border: 1px solid var(--border);
+  background-color: var(--input-bg);
+  color: var(--text-main);
   border-radius: 6px;
   margin-bottom: 20px;
   font-size: 14px;
@@ -253,33 +297,28 @@ select:focus {
 .data-table th {
   text-align: left;
   padding: 14px 16px;
-  background: #F3F4F6;
-  /* Slightly darker header background */
-  border-bottom: 2px solid #D1D5DB;
-  /* Stronger bottom divider */
+  background: var(--surface-bg);
+  border-bottom: 2px solid var(--border);
   font-weight: 700;
-  /* Bold typography */
   font-size: 13px;
-  color: #374151;
-  /* Darker distinct gray for headers */
+  color: var(--text-main);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .data-table td {
   padding: 16px;
-  border-bottom: 1px solid #E5E7EB;
-  /* Very thin explicit table row separator */
+  border-bottom: 1px solid var(--border);
   font-size: 14px;
 }
 
 .data-table tr:hover {
-  background: #F3F4F6 !important;
+  background: var(--surface-hover) !important;
 }
 
 /* Zebra Striping */
 .data-table tr:nth-child(even) {
-  background-color: #F9FAFB;
+  background-color: var(--surface-bg);
 }
 
 /* Action SVG Icons Integrations */

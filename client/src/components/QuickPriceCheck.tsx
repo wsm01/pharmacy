@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { t } from '../utils/i18n';
 
 // Define the Cart Item structure
 interface CartItem {
@@ -187,10 +188,10 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
         
       <div style={{ marginBottom: "20px", paddingBottom: "20px", borderBottom: "1px solid var(--border)" }}>
           <h3 style={{ margin: 0, fontSize: "18px", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
-              🔍 Quick Price Check & Sale
+              🔍 {t('price_calculator')}
           </h3>
           <p style={{ margin: "8px 0 0 0", color: "var(--text-muted)", fontSize: "14px" }}>
-              Check prices, build a cart, and process a sale without needing a Patient Name.
+              {t('quick_sale_desc')}
           </p>
       </div>
 
@@ -200,7 +201,7 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
             
             {/* THE AUTOCOMPLETE ENGINE UI */}
             <div style={{ flex: 2, minWidth: "250px", position: "relative" }} ref={dropdownRef}>
-                <label>Search Live Inventory</label>
+                <label>{t('search_live_inventory')}</label>
                 
                 {selectedMed ? (
                     // LOCKED STATE - When a user clicks a medicine from the dropdown
@@ -239,8 +240,8 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
                                             <li 
                                                 key={m.id} 
                                                 onClick={() => { setSelectedMed(m); setShowDropdown(false); }}
-                                                style={{ padding: "12px 16px", borderBottom: "1px solid #F3F4F6", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "background 0.2s" }}
-                                                onMouseOver={e => e.currentTarget.style.backgroundColor = "#F9FAFB"}
+                                                style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", transition: "background 0.2s" }}
+                                                onMouseOver={e => e.currentTarget.style.backgroundColor = "var(--surface-hover)"}
                                                 onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}
                                             >
                                                 <span style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "14px" }}>{m.name}</span>
@@ -259,7 +260,7 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
             </div>
 
             <div style={{ flex: 1, minWidth: "120px" }}>
-                <label>Qty to Deduct</label>
+                <label>{t('qty_to_deduct')}</label>
                 <input 
                     type="number" 
                     placeholder="1" 
@@ -271,25 +272,25 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
             </div>
         </div>
         
-        <button type="submit" className="btn" style={{ background: "#4B5563", width: "100%", marginBottom: "30px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
+        <button type="submit" className="btn" style={{ background: "var(--primary)", width: "100%", marginBottom: "30px", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}>
             <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-            Add Item to Cart
+            {t('add_to_cart')}
         </button>
       </form>
 
       {/* 2. SHOPPING CART UI WITH FINANCIALS */}
       {cart.length > 0 && (
-          <div style={{ background: "#F9FAFB", padding: "24px", borderRadius: "8px", border: "1px solid var(--border)", marginBottom: "24px" }}>
+          <div style={{ background: "var(--surface-bg)", padding: "24px", borderRadius: "8px", border: "1px solid var(--border)", marginBottom: "24px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                 <h3 style={{ margin: 0, fontSize: "16px", color: "var(--text-main)", display: "flex", alignItems: "center", gap: "8px" }}>
-                    🛒 Quick Sale Transaction 
+                    🛒 {t('quick_sale_transaction')} 
                 </h3>
                 <span className="badge ok">{cart.length} items</span>
               </div>
               
               <ul style={{ listStyle: "none", padding: 0, margin: "0 0 24px 0" }}>
                   {cart.map((item, index) => (
-                      <li key={item.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid #E5E7EB" }}>
+                      <li key={item.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", borderBottom: "1px solid var(--border)" }}>
                           <div style={{ display: "flex", flexDirection: "column" }}>
                               <span style={{ fontWeight: 600, color: "var(--text-main)", fontSize: "15px" }}>{item.medName}</span>
                               <span style={{ color: "var(--text-muted)", fontSize: "13px", marginTop: "4px" }}>
@@ -301,7 +302,7 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
                                   ${(item.unitPrice * item.quantity).toFixed(2)}
                               </span>
                               <button onClick={() => removeFromCart(item.id)} style={{ color: "var(--danger)", background: "transparent", border: "none", cursor: "pointer", fontSize: "13px", fontWeight: "bold" }}>
-                                  ✕ Remove
+                                  ✕ {t('remove')}
                               </button>
                           </div>
                       </li>
@@ -309,9 +310,9 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
               </ul>
 
               {/* LIVE GRAND TOTAL CALCULATOR */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px", backgroundColor: "#EEF2FF", borderRadius: "6px", marginBottom: "24px", border: "1px solid #C7D2FE" }}>
-                  <span style={{ fontSize: "16px", fontWeight: 700, color: "#4338CA", textTransform: "uppercase", letterSpacing: "0.05em" }}>Grand Total Due:</span>
-                  <span style={{ fontSize: "28px", fontWeight: 800, color: "#4338CA" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px", backgroundColor: "var(--surface-hover)", borderRadius: "6px", marginBottom: "24px", border: "1px solid var(--primary)" }}>
+                  <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--primary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{t('grand_total')}</span>
+                  <span style={{ fontSize: "28px", fontWeight: 800, color: "var(--primary)" }}>
                       ${grandTotal.toFixed(2)}
                   </span>
               </div>
@@ -323,7 +324,7 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
                 className="btn btn-success" 
                 style={{width: "100%", padding: "16px", fontSize: "16px", fontWeight: "bold", display: "flex", justifyContent: "center", gap: "8px"}}
               >
-                  {isProcessing ? "Processing Quick Sale..." : "Finalize Quick Sale"}
+                  {isProcessing ? t('processing_quick_sale') : t('finalize_quick_sale')}
               </button>
           </div>
       )}
@@ -332,10 +333,10 @@ export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void
       <button 
           onClick={handleReset} 
           className="btn" 
-          style={{ width: "100%", background: "#E5E7EB", color: "#374151", fontWeight: "bold", padding: "12px", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}
+          style={{ width: "100%", background: "var(--surface-disabled)", color: "var(--text-main)", fontWeight: "bold", padding: "12px", border: "none", borderRadius: "6px", cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center", gap: "8px" }}
       >
           <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><polyline points="3 3 3 8 8 8"></polyline></svg>
-          Reset Cart
+          {t('reset_cart')}
       </button>
 
     </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { t } from '../utils/i18n';
 
 export function AddMedicine({ onMedicineAdded }: { onMedicineAdded: () => void }) {
   const [name, setName] = useState("");
@@ -50,28 +51,28 @@ export function AddMedicine({ onMedicineAdded }: { onMedicineAdded: () => void }
   return (
     <div className="card" style={{ maxWidth: "600px" }}>
       <form onSubmit={handleSubmit}>
-        <label>Medicine Name</label>
+        <label>{t('medicine_name')}</label>
         <input type="text" placeholder="e.g. Ibuprofen 200mg" value={name} onChange={e => setName(e.target.value)} required />
         
-        <label>Unit Price ($)</label>
+        <label>{t('unit_price')}</label>
         <input type="number" step="0.01" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value)} required />
         
-        <label>Description</label>
+        <label>{t('description')}</label>
         <input type="text" placeholder="Optional details..." value={description} onChange={e => setDescription(e.target.value)} />
         
-        <label>Expiry Date</label>
+        <label>{t('expiry_date')}</label>
         <input type="date" value={expiryDate} onChange={e => setExpiryDate(e.target.value)} />
         
         <label className="checkbox-group">
           <input type="checkbox" checked={prescription} onChange={e => setPrescription(e.target.checked)} />
-          Requires Prescription Verification?
+          {t('prescription_required')}
         </label>
         
-        <label>Initial Stock Amount</label>
+        <label>{t('initial_stock')}</label>
         <input type="number" placeholder="Enter batch quantity" value={stock} onChange={e => setStock(e.target.value)} required />
         
         <button type="submit" className="btn btn-primary" style={{width: "100%", marginTop: "10px"}}>
-            Securely Add Inventory
+            {t('add_to_inventory')}
         </button>
       </form>
     </div>

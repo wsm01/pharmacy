@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { t } from '../utils/i18n';
 
 // === MINIMALIST SVG ICONS ===
 const SearchIcon = () => (
@@ -83,10 +84,10 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                     <SearchIcon />
                     <input 
                         type="text" 
-                        placeholder="Search specific inventory..." 
+                        placeholder={t('search_inventory')} 
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
-                        style={{ width: "100%", padding: "10px 12px 10px 40px", border: "1px solid #D1D5DB", borderRadius: "6px", marginBottom: 0, height: "42px" }}
+                        style={{ width: "100%", padding: "10px 12px 10px 40px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px", marginBottom: 0, height: "42px" }}
                     />
                 </div>
                 
@@ -94,35 +95,35 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                 <select 
                     value={filter} 
                     onChange={e => setFilter(e.target.value)}
-                    style={{ height: "42px", padding: "0 16px", border: "1px solid #D1D5DB", borderRadius: "6px", backgroundColor: "#fff", color: "var(--text-main)", outline: "none", cursor: "pointer", fontSize: "14px" }}
+                    style={{ height: "42px", padding: "0 16px", border: "1px solid var(--border)", borderRadius: "6px", backgroundColor: "var(--input-bg)", color: "var(--text-main)", outline: "none", cursor: "pointer", fontSize: "14px" }}
                 >
-                    <option value="all">All Inventory</option>
-                    <option value="low">Critical Low Stock</option>
+                    <option value="all">{t('current_inventory')}</option>
+                    <option value="low">{t('stock_low')}</option>
                 </select>
             </div>
 
             {/* Smart Action Routing Button */}
             <button onClick={onAddNew} className="btn btn-primary" style={{ display: "flex", alignItems: "center", justifyItems: "center", gap: "8px", height: "42px" }}>
                 <PlusIcon />
-                Add New Medicine
+                {t('add_new_medicine')}
             </button>
         </div>
 
       {/* RENDER TABLE LOGIC */}
       {medicines.length === 0 ? (
-        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>No medicines found in the whole system. Add some stock to get started!</p>
+        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>{t('db_empty')}</p>
       ) : filteredMedicines.length === 0 ? (
-        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>No exact results found for "{searchQuery}". Try clearing filters.</p>
+        <p style={{ color: "var(--text-muted)", textAlign: "center", padding: "40px" }}>{t('no_medicines_found')}</p>
       ) : (
         <div style={{ overflowX: "auto" }}>
             {/* HTML constraints removed to rely purely on CSS Framework rules! */}
             <table className="data-table">
                 <thead>
                     <tr>
-                    <th style={{ width: "40%", textAlign: "left" }}>Medicine Product Name</th>
-                    <th style={{ textAlign: "center" }}>Unit Price</th>
-                    <th style={{ textAlign: "center" }}>Volume Stock Level</th>
-                    <th style={{ textAlign: "right" }}>Database Actions</th>
+                    <th style={{ width: "40%", textAlign: "left" }}>{t('medicine_name')}</th>
+                    <th style={{ textAlign: "center" }}>{t('unit_price')}</th>
+                    <th style={{ textAlign: "center" }}>{t('stock_ok')}</th>
+                    <th style={{ textAlign: "right" }}>{t('edit')} / {t('delete')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -144,23 +145,23 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                         <td style={{ textAlign: "right", paddingRight: "10px" }}>
                             <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", alignItems: "center" }}>
                                 <button 
-                                    onClick={() => alert('The backend API for Editing is not built yet! This is just a UI placeholder.')} 
+                                    onClick={() => alert('Editing not implemented yet.')} 
                                     style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "none", padding: "6px 10px", color: "var(--primary)", fontWeight: 600, fontSize: "13px", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }}
-                                    onMouseOver={e => e.currentTarget.style.background = "rgba(79, 70, 229, 0.1)"}
+                                    onMouseOver={e => e.currentTarget.style.background = "var(--surface-bg)"}
                                     onMouseOut={e => e.currentTarget.style.background = "transparent"}
-                                    title="Edit Medicine"
+                                    title={t('edit')}
                                 >
-                                    <EditIcon /> Edit
+                                    <EditIcon /> {t('edit')}
                                 </button>
                                 
                                 <button 
                                     onClick={() => deleteMed(m.id)} 
                                     style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "none", padding: "6px 10px", color: "var(--danger)", fontWeight: 600, fontSize: "13px", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }} 
-                                    onMouseOver={e => e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)"}
+                                    onMouseOver={e => e.currentTarget.style.background = "var(--surface-bg)"}
                                     onMouseOut={e => e.currentTarget.style.background = "transparent"}
-                                    title="Delete Medicine"
+                                    title={t('delete')}
                                 >
-                                    <TrashIcon /> Delete
+                                    <TrashIcon /> {t('delete')}
                                 </button>
                             </div>
                         </td>

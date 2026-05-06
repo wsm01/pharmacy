@@ -49,7 +49,10 @@ app.post('/register', async (req, res) => {
         );
 
         res.status(201).json({ message: "User registered successfully!" });
-    } catch (err) {
+    } catch (err: any) {
+        if (err.code === '23505') {
+            return res.status(400).json({ message: "Username already taken!" });
+        }
         console.error(err);
         res.status(500).json({ message: "Error registering user" });
     }
@@ -66,7 +69,7 @@ app.post('/login', async (req, res) => {
 
         if (isMatch) {
             // Give them a "Wristband" (Token) that lasts for 1 hour
-            const token = jwt.sign({ userId: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '1h' });
 
             // Send the token back to the browser
             res.json({ message: "Login successful!", token: token });
@@ -146,18 +149,24 @@ app.put('/medicines/:id', async (req, res) => {
     }
 });
 
-app.post('/sell-medicine', async (req, res) => {
+app.post('/sell-medicine', async (req: any, res) => {
     const { name, med, quantity } = req.body;
     try {
+        const medQuery = await client.query('SELECT price FROM medicines WHERE name = $1', [med]);
+        if (medQuery.rows.length === 0) return res.status(404).send("Medicine not found");
+        const price = medQuery.rows[0].price;
+        const total_price = price * quantity;
+        const sold_by = req.user?.username || 'Unknown';
+
         await client.query(
             'UPDATE medicines SET stock = stock - $1 WHERE name = $2',
             [quantity, med]);
 
         const result = await client.query(
-            `INSERT INTO sale_history (buyer_name, medicine_name, quantity)
-             VALUES ($1, $2, $3)
+            `INSERT INTO sale_history (buyer_name, medicine_name, quantity, total_price, sold_by)
+             VALUES ($1, $2, $3, $4, $5)
              RETURNING *`,
-            [name, med, quantity]
+            [name, med, quantity, total_price, sold_by]
         );
 
         res.status(201).json({ message: "Sale successful!", data: result.rows[0] });
@@ -219,7 +228,7 @@ app.post('/pharmacy-details', async (req, res) => {
 app.get('/user-profile', async (req: any, res) => {
     try {
         // req.user comes from authenticateToken
-        const result = await client.query('SELECT id, username, email, display_name FROM users WHERE id = $1', [req.user.userId]);
+        const result = await client.query('SELECT id, username, email, display_name, role FROM users WHERE id = $1', [req.user.userId]);
         if (result.rows.length === 0) return res.status(404).send("User not found");
         res.json(result.rows[0]);
     } catch (err) {

@@ -3,24 +3,46 @@ import { Auth } from './components/Auth';
 import { MedicineList } from './components/MedicineList';
 import { AddMedicine } from './components/AddMedicine';
 import { SellMedicine } from './components/SellMedicine';
-import { QuickPriceCheck } from './components/QuickPriceCheck';
+import { QuickSale } from './components/QuickSale';
 import { Feedback } from './components/Feedback';
 import { Settings } from './components/Settings';
+import { AdminDashboard } from './components/AdminDashboard';
 import { t } from './utils/i18n';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [refreshCounter, setRefreshCounter] = useState(0);
-  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'sell' | 'price-check' | 'feedback' | 'settings'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'sell' | 'quick-sale' | 'feedback' | 'settings' | 'admin'>('inventory');
+
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setUserRole(payload.role || 'user');
+      } catch (e) {
+        setUserRole('user');
+      }
+    }
+  };
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
-      setIsAuthenticated(true);
+      handleAuthSuccess();
     }
   }, []);
 
+  // Route Protection: Redirect non-admins if they somehow access the admin tab
+  useEffect(() => {
+    if (activeTab === 'admin' && userRole && userRole !== 'admin') {
+      setActiveTab('sell'); // Redirect back to POS
+    }
+  }, [activeTab, userRole]);
+
   if (!isAuthenticated) {
-    return <Auth onLoginSuccess={() => setIsAuthenticated(true)} />;
+    return <Auth onLoginSuccess={handleAuthSuccess} />;
   }
 
   return (
@@ -61,13 +83,24 @@ export default function App() {
           </button>
           
           <button 
-            className={`sidebar-btn ${activeTab === 'price-check' ? 'active' : ''}`}
-            onClick={() => setActiveTab('price-check')}
+            className={`sidebar-btn ${activeTab === 'quick-sale' ? 'active' : ''}`}
+            onClick={() => setActiveTab('quick-sale')}
             title={t('quick_price_check')}
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             <span className="sidebar-text">{t('quick_price_check')}</span>
           </button>
+
+          {userRole === 'admin' && (
+            <button 
+              className={`sidebar-btn ${activeTab === 'admin' ? 'active' : ''}`}
+              onClick={() => setActiveTab('admin')}
+              title="Admin Dashboard"
+            >
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              <span className="sidebar-text">Admin Dashboard</span>
+            </button>
+          )}
         </div>
 
         <div className="sidebar-footer">
@@ -135,10 +168,10 @@ export default function App() {
            </>
         )}
         
-        {activeTab === 'price-check' && (
+        {activeTab === 'quick-sale' && (
            <>
              <h2 className="page-title">{t('quick_price_check')}</h2>
-             <QuickPriceCheck onMedicineSold={() => {
+             <QuickSale onMedicineSold={() => {
                 setRefreshCounter(c => c + 1);
                 setActiveTab('inventory'); 
              }} />
@@ -153,6 +186,13 @@ export default function App() {
            <>
              <h2 className="page-title">{t('settings_configuration')}</h2>
              <Settings />
+           </>
+        )}
+
+        {activeTab === 'admin' && userRole === 'admin' && (
+           <>
+             <h2 className="page-title">Admin Dashboard</h2>
+             <AdminDashboard />
            </>
         )}
       </div>

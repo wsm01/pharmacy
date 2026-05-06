@@ -4,7 +4,7 @@ const translations = {
     'inventory_dashboard': 'Inventory Dashboard',
     'receive_stock': 'Receive Stock',
     'point_of_sale': 'Point of Sale',
-    'quick_price_check': 'Quick Price Check',
+    'quick_price_check': 'Quick Sale',
     'feedback': 'Feedback',
     'settings': 'Settings',
     'sign_out': 'Sign Out',
@@ -43,7 +43,7 @@ const translations = {
     'processing': 'Processing Database Transactions...',
     
     // Quick Price Check
-    'price_calculator': 'Price Calculator',
+    'price_calculator': 'Quick Sale Terminal',
     'price_check_desc': 'Check prices instantly without affecting inventory or recording a sale.',
     'quick_sale_desc': 'Check prices, build a cart, and process a sale without needing a Patient Name.',
     'quick_sale_transaction': 'Quick Sale Transaction',
@@ -90,7 +90,7 @@ const translations = {
     'inventory_dashboard': 'Tableau de Bord',
     'receive_stock': 'Recevoir du Stock',
     'point_of_sale': 'Point de Vente',
-    'quick_price_check': 'Vérification Rapide',
+    'quick_price_check': 'Vente Rapide',
     'feedback': 'Commentaires',
     'settings': 'Paramètres',
     'sign_out': 'Déconnexion',
@@ -129,7 +129,7 @@ const translations = {
     'processing': 'Traitement en Cours...',
     
     // Quick Price Check
-    'price_calculator': 'Calculateur de Prix',
+    'price_calculator': 'Terminal de Vente Rapide',
     'price_check_desc': 'Vérifiez les prix instantanément sans affecter l\'inventaire ni enregistrer de vente.',
     'quick_sale_desc': 'Vérifiez les prix, créez un panier et traitez une vente sans nom de patient.',
     'quick_sale_transaction': 'Transaction Rapide',
@@ -176,7 +176,7 @@ const translations = {
     'inventory_dashboard': 'لوحة تحكم المخزون',
     'receive_stock': 'استلام المخزون',
     'point_of_sale': 'نقطة البيع',
-    'quick_price_check': 'التحقق السريع من السعر',
+    'quick_price_check': 'بيع سريع',
     'feedback': 'التعليقات',
     'settings': 'الإعدادات',
     'sign_out': 'تسجيل الخروج',
@@ -215,7 +215,7 @@ const translations = {
     'processing': 'جاري معالجة المعاملة...',
     
     // Quick Price Check
-    'price_calculator': 'حاسبة الأسعار',
+    'price_calculator': 'محطة البيع السريع',
     'price_check_desc': 'تحقق من الأسعار فوراً دون التأثير على المخزون أو تسجيل البيع.',
     'quick_sale_desc': 'تحقق من الأسعار، قم ببناء سلة، ومعالجة عملية بيع دون الحاجة إلى اسم المريض.',
     'quick_sale_transaction': 'معاملة بيع سريعة',

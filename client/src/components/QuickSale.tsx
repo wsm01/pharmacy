@@ -17,7 +17,7 @@ interface Medicine {
   stock: number;
 }
 
-export function QuickPriceCheck({ onMedicineSold }: { onMedicineSold: () => void }) {
+export function QuickSale({ onMedicineSold }: { onMedicineSold: () => void }) {
   // Shopping Cart State
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);

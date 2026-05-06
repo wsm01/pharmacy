@@ -29,6 +29,7 @@ interface Medicine {
   description?: string;
   expiry_date?: string;
   prescription?: boolean;
+  barcode?: string;
 }
 
 export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: number, onAddNew: () => void }) {
@@ -42,6 +43,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
   const [editName, setEditName] = useState("");
   const [editPrice, setEditPrice] = useState<number | string>("");
   const [editStock, setEditStock] = useState<number | string>("");
+  const [editBarcode, setEditBarcode] = useState("");
   const [isUpdating, setIsUpdating] = useState(false); 
   
   const API_URL = "http://localhost:3000";
@@ -81,6 +83,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
     setEditName(medicine.name);
     setEditPrice(medicine.price);
     setEditStock(medicine.stock);
+    setEditBarcode(medicine.barcode || "");
   }
 
   async function handleUpdate(e: React.FormEvent) {
@@ -99,7 +102,8 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                 ...editingMedicine,
                 name: editName,
                 price: Number(editPrice),
-                stock: Number(editStock)
+                stock: Number(editStock),
+                barcode: editBarcode
             })
         });
 
@@ -266,6 +270,17 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                             onChange={e => setEditStock(e.target.value)}
                             required
                             min="0"
+                            style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px" }}
+                        />
+                    </div>
+
+                    <div style={{ marginBottom: "32px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)", fontSize: "14px" }}>{t('barcode')}</label>
+                        <input 
+                            type="text" 
+                            value={editBarcode}
+                            onChange={e => setEditBarcode(e.target.value)}
+                            placeholder="Scan or type barcode..."
                             style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px" }}
                         />
                     </div>

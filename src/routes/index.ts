@@ -104,14 +104,14 @@ app.get('/medicines', async (req, res) => {
 
 
 app.post('/add-medicine', async (req, res) => { //listen to add-medicine
-    const { name, description, price, expiry_date, prescription, stock } = req.body;
+    const { name, description, price, expiry_date, prescription, stock, barcode } = req.body;
 
     try {
         const result = await client.query(
-            `INSERT INTO medicines (name, description, price,expiry_date,prescription,stock)
-             VALUES ($1, $2, $3, $4, $5, $6)
+            `INSERT INTO medicines (name, description, price, expiry_date, prescription, stock, barcode)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
              RETURNING *`,
-            [name, description, price, expiry_date, prescription, stock]
+            [name, description, price, expiry_date, prescription, stock, barcode]
         );
         res.status(201).json(result.rows[0]);
     } catch (err) {
@@ -122,7 +122,7 @@ app.post('/add-medicine', async (req, res) => { //listen to add-medicine
 //search medicine by id
 app.put('/medicines/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, description, price, expiry_date, prescription, stock } = req.body;
+    const { name, description, price, expiry_date, prescription, stock, barcode } = req.body;
 
     try {
         const result = await client.query(
@@ -132,10 +132,11 @@ app.put('/medicines/:id', async (req, res) => {
            price = $3,
            expiry_date = $4,
            prescription = $5,
-           stock = $6
-       WHERE id = $7
+           stock = $6,
+           barcode = $7
+       WHERE id = $8
        RETURNING *`,
-            [name, description, price, expiry_date, prescription, stock, id]
+            [name, description, price, expiry_date, prescription, stock, barcode, id]
         );
 
         if (result.rows.length === 0) {
@@ -146,6 +147,20 @@ app.put('/medicines/:id', async (req, res) => {
 
     } catch (err) {
         res.status(500).send("Error updating medicine");
+    }
+});
+
+// Get medicine by barcode
+app.get('/medicines/barcode/:code', async (req, res) => {
+    const { code } = req.params;
+    try {
+        const result = await client.query('SELECT * FROM medicines WHERE barcode = $1', [code]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ message: "No medicine found with this barcode" });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).send("Error searching for barcode");
     }
 });
 

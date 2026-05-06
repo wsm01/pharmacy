@@ -7,13 +7,14 @@ import { QuickSale } from './components/QuickSale';
 import { Feedback } from './components/Feedback';
 import { Settings } from './components/Settings';
 import { AdminDashboard } from './components/AdminDashboard';
+import { QRScanner } from './components/QRScanner';
 import { t } from './utils/i18n';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [refreshCounter, setRefreshCounter] = useState(0);
-  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'sell' | 'quick-sale' | 'feedback' | 'settings' | 'admin'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'add' | 'sell' | 'quick-sale' | 'scanner' | 'feedback' | 'settings' | 'admin'>('inventory');
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
@@ -89,6 +90,15 @@ export default function App() {
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
             <span className="sidebar-text">{t('quick_price_check')}</span>
+          </button>
+
+          <button 
+            className={`sidebar-btn ${activeTab === 'scanner' ? 'active' : ''}`}
+            onClick={() => setActiveTab('scanner')}
+            title={t('scan_medicine')}
+          >
+            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2"></path><path d="M17 3h2a2 2 0 0 1 2 2v2"></path><path d="M21 17v2a2 2 0 0 1-2 2h-2"></path><path d="M7 21H5a2 2 0 0 1-2-2v-2"></path><line x1="7" y1="12" x2="17" y2="12"></line></svg>
+            <span className="sidebar-text">{t('scan_medicine')}</span>
           </button>
 
           {userRole === 'admin' && (
@@ -172,6 +182,16 @@ export default function App() {
            <>
              <h2 className="page-title">{t('quick_price_check')}</h2>
              <QuickSale onMedicineSold={() => {
+                setRefreshCounter(c => c + 1);
+                setActiveTab('inventory'); 
+             }} />
+           </>
+        )}
+
+        {activeTab === 'scanner' && (
+           <>
+             <h2 className="page-title">{t('scan_medicine')}</h2>
+             <QRScanner onSaleComplete={() => {
                 setRefreshCounter(c => c + 1);
                 setActiveTab('inventory'); 
              }} />

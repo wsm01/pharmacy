@@ -40,6 +40,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
   // === EDIT STATE ===
   const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
   const [editName, setEditName] = useState("");
+  const [editPrice, setEditPrice] = useState<number | string>("");
   const [editStock, setEditStock] = useState<number | string>("");
   const [isUpdating, setIsUpdating] = useState(false); 
   
@@ -78,6 +79,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
   function openEditModal(medicine: Medicine) {
     setEditingMedicine(medicine);
     setEditName(medicine.name);
+    setEditPrice(medicine.price);
     setEditStock(medicine.stock);
   }
 
@@ -96,6 +98,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
             body: JSON.stringify({
                 ...editingMedicine,
                 name: editName,
+                price: Number(editPrice),
                 stock: Number(editStock)
             })
         });
@@ -238,6 +241,19 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                             value={editName}
                             onChange={e => setEditName(e.target.value)}
                             required
+                            style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px" }}
+                        />
+                    </div>
+
+                    <div style={{ marginBottom: "20px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)", fontSize: "14px" }}>{t('unit_price')}</label>
+                        <input 
+                            type="number" 
+                            step="0.01"
+                            value={editPrice}
+                            onChange={e => setEditPrice(e.target.value)}
+                            required
+                            min="0"
                             style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px" }}
                         />
                     </div>

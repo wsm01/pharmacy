@@ -26,6 +26,9 @@ interface Medicine {
   name: string;
   price: number;
   stock: number;
+  description?: string;
+  expiry_date?: string;
+  prescription?: boolean;
 }
 
 export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: number, onAddNew: () => void }) {
@@ -33,6 +36,12 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
   // NEW STATE: Search & Filter Memory
   const [searchQuery, setSearchQuery] = useState("");
   const [filter, setFilter] = useState("all"); 
+  
+  // === EDIT STATE ===
+  const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editStock, setEditStock] = useState<number | string>("");
+  const [isUpdating, setIsUpdating] = useState(false); 
   
   const API_URL = "http://localhost:3000";
 
@@ -65,6 +74,46 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
     }
   }
 
+  // === EDIT LOGIC ===
+  function openEditModal(medicine: Medicine) {
+    setEditingMedicine(medicine);
+    setEditName(medicine.name);
+    setEditStock(medicine.stock);
+  }
+
+  async function handleUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingMedicine) return;
+
+    setIsUpdating(true);
+    try {
+        const res = await fetch(`${API_URL}/medicines/${editingMedicine.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({
+                ...editingMedicine,
+                name: editName,
+                stock: Number(editStock)
+            })
+        });
+
+        if (res.ok) {
+            setEditingMedicine(null);
+            loadMedicines();
+        } else {
+            alert("Failed to update medicine.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Error connecting to server.");
+    } finally {
+        setIsUpdating(false);
+    }
+  }
+
   // === LOCAL SEARCH ALGORITHM ===
   const filteredMedicines = medicines.filter(m => {
       const matchesSearch = m.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -73,6 +122,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
   });
 
   return (
+    <>
     <div className="card">
         
        {/* SAAS HEADER CONTROLS (Improved Padding & Alignment) */}
@@ -145,7 +195,7 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                         <td style={{ textAlign: "right", paddingRight: "10px" }}>
                             <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", alignItems: "center" }}>
                                 <button 
-                                    onClick={() => alert('Editing not implemented yet.')} 
+                                    onClick={() => openEditModal(m)} 
                                     style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "none", padding: "6px 10px", color: "var(--primary)", fontWeight: 600, fontSize: "13px", cursor: "pointer", borderRadius: "4px", transition: "background 0.2s" }}
                                     onMouseOver={e => e.currentTarget.style.background = "var(--surface-bg)"}
                                     onMouseOut={e => e.currentTarget.style.background = "transparent"}
@@ -173,5 +223,58 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
         </div>
       )}
     </div>
+
+    {/* === EDIT MODAL (Glassmorphism Style) === */}
+    {editingMedicine && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "20px" }}>
+            <div className="card" style={{ maxWidth: "450px", width: "100%", padding: "32px", position: "relative" }}>
+                <h3 style={{ margin: "0 0 24px 0", color: "var(--text-main)", fontSize: "20px" }}>{t('edit_medicine')}</h3>
+                
+                <form onSubmit={handleUpdate}>
+                    <div style={{ marginBottom: "20px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)", fontSize: "14px" }}>{t('medicine_name')}</label>
+                        <input 
+                            type="text" 
+                            value={editName}
+                            onChange={e => setEditName(e.target.value)}
+                            required
+                            style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px" }}
+                        />
+                    </div>
+
+                    <div style={{ marginBottom: "32px" }}>
+                        <label style={{ display: "block", marginBottom: "8px", color: "var(--text-muted)", fontSize: "14px" }}>{t('stock_quantity')}</label>
+                        <input 
+                            type="number" 
+                            value={editStock}
+                            onChange={e => setEditStock(e.target.value)}
+                            required
+                            min="0"
+                            style={{ width: "100%", padding: "10px 12px", border: "1px solid var(--border)", background: "var(--input-bg)", color: "var(--text-main)", borderRadius: "6px" }}
+                        />
+                    </div>
+
+                    <div style={{ display: "flex", gap: "12px", justifyContent: "flex-end" }}>
+                        <button 
+                            type="button" 
+                            onClick={() => setEditingMedicine(null)} 
+                            className="btn" 
+                            style={{ background: "var(--surface-disabled)", color: "var(--text-main)" }}
+                        >
+                            {t('cancel')}
+                        </button>
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary" 
+                            disabled={isUpdating}
+                        >
+                            {isUpdating ? t('processing') : t('save_changes')}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    )}
+    </>
   );
 }

@@ -19,6 +19,11 @@ const translations = {
     'stock_ok': 'In Stock',
     'edit': 'Edit',
     'delete': 'Delete',
+    'edit_medicine': 'Edit Medicine',
+    'update': 'Update',
+    'cancel': 'Cancel',
+    'save_changes': 'Save Changes',
+    'stock_quantity': 'Stock Quantity',
 
     // Receive Stock
     'receive_new_stock': 'Receive New Stock',
@@ -83,7 +88,17 @@ const translations = {
     'improvement': 'Improvement',
     'question': 'Question',
     'other': 'Other',
-    'feedback_success': 'Thank you! Your feedback has been sent to the Admin.'
+    'feedback_success': 'Thank you! Your feedback has been sent to the Admin.',
+    
+    // Admin Dashboard
+    'total_revenue': 'Total Revenue',
+    'total_sales': 'Total Sales',
+    'top_seller': 'Top Seller',
+    'recent_transactions': 'Recent Transactions',
+    'sale_date': 'Date',
+    'sold_by': 'Sold By',
+    'no_sales_data': 'No sales data available.',
+    'loading_admin_stats': 'Loading admin statistics...',
   },
   French: {
     // Sidebar
@@ -105,6 +120,11 @@ const translations = {
     'stock_ok': 'En Stock',
     'edit': 'Modifier',
     'delete': 'Supprimer',
+    'edit_medicine': 'Modifier le Médicament',
+    'update': 'Mettre à jour',
+    'cancel': 'Annuler',
+    'save_changes': 'Enregistrer les modifications',
+    'stock_quantity': 'Quantité en Stock',
 
     // Receive Stock
     'receive_new_stock': 'Recevoir Nouveau Stock',
@@ -169,7 +189,17 @@ const translations = {
     'improvement': 'Amélioration',
     'question': 'Question',
     'other': 'Autre',
-    'feedback_success': 'Merci! Vos commentaires ont été envoyés à l\'administrateur.'
+    'feedback_success': 'Merci! Vos commentaires ont été envoyés à l\'administrateur.',
+    
+    // Admin Dashboard
+    'total_revenue': 'Revenu Total',
+    'total_sales': 'Ventes Totales',
+    'top_seller': 'Meilleur Vendeur',
+    'recent_transactions': 'Transactions Récentes',
+    'sale_date': 'Date',
+    'sold_by': 'Vendu Par',
+    'no_sales_data': 'Aucune donnée de vente disponible.',
+    'loading_admin_stats': 'Chargement des statistiques...',
   },
   Arabic: {
     // Sidebar
@@ -191,6 +221,11 @@ const translations = {
     'stock_ok': 'متوفر',
     'edit': 'تعديل',
     'delete': 'حذف',
+    'edit_medicine': 'تعديل الدواء',
+    'update': 'تحديث',
+    'cancel': 'إلغاء',
+    'save_changes': 'حفظ التغييرات',
+    'stock_quantity': 'كمية المخزون',
 
     // Receive Stock
     'receive_new_stock': 'استلام مخزون جديد',
@@ -255,7 +290,17 @@ const translations = {
     'improvement': 'تحسين',
     'question': 'سؤال',
     'other': 'أخرى',
-    'feedback_success': 'شكرًا لك! تم إرسال ملاحظاتك إلى المسؤول.'
+    'feedback_success': 'شكرًا لك! تم إرسال ملاحظاتك إلى المسؤول.',
+    
+    // Admin Dashboard
+    'total_revenue': 'إجمالي الإيرادات',
+    'total_sales': 'إجمالي المبيعات',
+    'top_seller': 'الأكثر مبيعاً',
+    'recent_transactions': 'المعاملات الأخيرة',
+    'sale_date': 'التاريخ',
+    'sold_by': 'بواسطة',
+    'no_sales_data': 'لا توجد بيانات مبيعات متاحة.',
+    'loading_admin_stats': 'جاري تحميل إحصائيات المسؤول...',
   }
 };
 

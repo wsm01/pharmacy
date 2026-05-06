@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { t } from '../utils/i18n';
 
 interface Sale {
   id: number;
@@ -35,7 +36,7 @@ export function AdminDashboard() {
   }, []);
 
   if (loading) {
-    return <div style={{ padding: "24px", color: "var(--text-muted)" }}>Loading admin statistics...</div>;
+    return <div style={{ padding: "24px", color: "var(--text-muted)" }}>{t('loading_admin_stats')}</div>;
   }
 
   // 1. Calculate Stats
@@ -57,10 +58,10 @@ export function AdminDashboard() {
 
   // Common glassmorphism style object
   const glassCardStyle = {
-    background: "rgba(255, 255, 255, 0.65)",
+    background: "var(--surface-bg)",
     backdropFilter: "blur(12px)",
     WebkitBackdropFilter: "blur(12px)",
-    border: "1px solid rgba(255, 255, 255, 0.4)",
+    border: "1px solid var(--border)",
     boxShadow: "0 8px 32px 0 rgba(31, 38, 135, 0.05)",
     borderRadius: "16px",
     padding: "24px",
@@ -77,7 +78,7 @@ export function AdminDashboard() {
         {/* Total Revenue Card (Green Accent) */}
         <div style={{ ...glassCardStyle, borderTop: "4px solid #10b981" }}>
           <h4 style={{ margin: "0 0 8px 0", color: "var(--text-muted)", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Total Revenue
+            {t('total_revenue')}
           </h4>
           <div style={{ fontSize: "32px", fontWeight: "800", color: "#10b981" }}>
             ${totalRevenue.toFixed(2)}
@@ -87,7 +88,7 @@ export function AdminDashboard() {
         {/* Total Sales Card */}
         <div style={{ ...glassCardStyle, borderTop: "4px solid var(--primary)" }}>
           <h4 style={{ margin: "0 0 8px 0", color: "var(--text-muted)", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Total Sales
+            {t('total_sales')}
           </h4>
           <div style={{ fontSize: "32px", fontWeight: "800", color: "var(--text-main)" }}>
             {totalSales}
@@ -97,7 +98,7 @@ export function AdminDashboard() {
         {/* Top Seller Card */}
         <div style={{ ...glassCardStyle, borderTop: "4px solid #8b5cf6" }}>
           <h4 style={{ margin: "0 0 8px 0", color: "var(--text-muted)", fontSize: "14px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-            Top Seller
+            {t('top_seller')}
           </h4>
           <div style={{ fontSize: "28px", fontWeight: "700", color: "var(--text-main)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
             {topSeller}
@@ -115,25 +116,25 @@ export function AdminDashboard() {
         overflow: "hidden"
       }}>
         <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border)", backgroundColor: "rgba(0,0,0,0.01)" }}>
-          <h3 style={{ margin: 0, color: "var(--text-main)", fontSize: "18px" }}>Recent Transactions</h3>
+          <h3 style={{ margin: 0, color: "var(--text-main)", fontSize: "18px" }}>{t('recent_transactions')}</h3>
         </div>
         
         <div style={{ overflowX: "auto", maxHeight: "500px", overflowY: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "600px" }}>
-            <thead style={{ position: "sticky", top: 0, backgroundColor: "#f9fafb", zIndex: 10 }}>
+            <thead style={{ position: "sticky", top: 0, backgroundColor: "var(--surface-bg)", zIndex: 10 }}>
               <tr>
-                <th style={{ padding: "12px 24px", textAlign: "left", fontSize: "13px", fontWeight: "600", color: "#6b7280", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>Date</th>
-                <th style={{ padding: "12px 24px", textAlign: "left", fontSize: "13px", fontWeight: "600", color: "#6b7280", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>Medicine Name</th>
-                <th style={{ padding: "12px 24px", textAlign: "center", fontSize: "13px", fontWeight: "600", color: "#6b7280", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>Quantity</th>
-                <th style={{ padding: "12px 24px", textAlign: "right", fontSize: "13px", fontWeight: "600", color: "#6b7280", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>Total</th>
-                <th style={{ padding: "12px 24px", textAlign: "right", fontSize: "13px", fontWeight: "600", color: "#6b7280", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>Sold By</th>
+                <th style={{ padding: "12px 24px", textAlign: "left", fontSize: "13px", fontWeight: "600", color: "var(--text-muted)", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>{t('sale_date')}</th>
+                <th style={{ padding: "12px 24px", textAlign: "left", fontSize: "13px", fontWeight: "600", color: "var(--text-muted)", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>{t('medicine_name')}</th>
+                <th style={{ padding: "12px 24px", textAlign: "center", fontSize: "13px", fontWeight: "600", color: "var(--text-muted)", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>{t('qty_to_deduct')}</th>
+                <th style={{ padding: "12px 24px", textAlign: "right", fontSize: "13px", fontWeight: "600", color: "var(--text-muted)", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>{t('estimated_total')}</th>
+                <th style={{ padding: "12px 24px", textAlign: "right", fontSize: "13px", fontWeight: "600", color: "var(--text-muted)", textTransform: "uppercase", borderBottom: "1px solid var(--border)" }}>{t('sold_by')}</th>
               </tr>
             </thead>
             <tbody>
               {sales.length === 0 ? (
                 <tr>
                   <td colSpan={5} style={{ padding: "24px", textAlign: "center", color: "var(--text-muted)" }}>
-                    No sales data available.
+                    {t('no_sales_data')}
                   </td>
                 </tr>
               ) : (
@@ -152,7 +153,7 @@ export function AdminDashboard() {
                       ${Number(sale.total_price || 0).toFixed(2)}
                     </td>
                     <td style={{ padding: "16px 24px", fontSize: "14px", color: "var(--text-muted)", textAlign: "right" }}>
-                      <span style={{ backgroundColor: "#f3f4f6", padding: "4px 8px", borderRadius: "12px", fontSize: "12px", fontWeight: "500" }}>
+                      <span style={{ backgroundColor: "var(--surface-bg)", border: "1px solid var(--border)", color: "var(--text-main)", padding: "4px 8px", borderRadius: "12px", fontSize: "12px", fontWeight: "500" }}>
                         {sale.sold_by || 'Unknown'}
                       </span>
                     </td>

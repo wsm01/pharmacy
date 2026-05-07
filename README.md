@@ -1,65 +1,83 @@
-# Pharmacy Management System
+# 🏥 Pulse Pharmacy Management System
 
-A full-stack application for managing pharmacy inventory, sales, and user profiles.
+A professional, enterprise-grade Pharmacy Management System built with a modern full-stack architecture. This application is designed to streamline pharmacy operations, including secure inventory management, localized point-of-sale terminals, and advanced barcode scanning.
 
-## Prerequisites
+## 🌟 Key Features
+- **Secure Authentication**: JWT-based security with password encryption.
+- **Inventory Control**: Real-time stock tracking with "Low Stock" visual alerts.
+- **QR/Barcode Terminal**: Integrated scanning for UPC, EAN, and GS1 DataMatrix codes.
+- **Multi-lingual Support**: Fully localized in **English, French, and Arabic**.
+- **Admin Analytics**: Comprehensive dashboard for revenue tracking and sales history.
+- **Modern UI**: High-performance Glassmorphism design with **Dark Mode** support.
 
-- [Node.js](https://nodejs.org/) (v16 or higher)
+---
+
+## 🚀 Installation & Setup
+
+### 1. Prerequisites
+- [Node.js](https://nodejs.org/) (v18 or higher)
 - [PostgreSQL](https://www.postgresql.org/)
 
-## Getting Started
-
-### 1. Clone the repository
-```bash
-git clone <repository-url>
-cd pharmacy-backend
+### 2. Environment Configuration
+Create a file named `.env` in the root directory and add your PostgreSQL credentials:
+```env
+DB_USER=your_postgres_user
+DB_HOST=localhost
+DB_NAME=pharmacy_db
+DB_PASSWORD=your_password
+DB_PORT=5432
+JWT_SECRET=pulse_pharmacy_secret_2026
 ```
 
-### 2. Setup the Backend
+### 3. Database Initialization (The "Magic" Step)
+Follow these steps to set up the database and populate it with 15 real medicines and barcodes for immediate testing:
 
 1. **Install dependencies:**
    ```bash
    npm install
    ```
-
-2. **Configure environment variables:**
-   - Create a file named `.env` in the root directory.
-   - Copy the contents from `.env.example` into `.env`.
-   - Update the `DB_PASSWORD` and other variables with your local PostgreSQL credentials.
-
-3. **Initialize the Database:**
-   - Ensure PostgreSQL is running.
-   - Create a database named `pharmacy_db` (or whatever you named it in `.env`).
-   - Run the setup script to create all tables:
-     ```bash
-     node db-setup.js
-     ```
-
-
-4. **Start the backend server:**
+2. **Initialize Tables:**
    ```bash
-   npm run dev
+   node db-setup.js
    ```
-   The backend will run on `http://localhost:3000`.
-
-### 3. Setup the Frontend (Client)
-
-1. **Navigate to the client folder:**
+3. **Seed Demo Data:**
    ```bash
-   cd client
+   # This is crucial to see the "Inventory" and "Scanner" in action!
+   node seed-medicines.js
    ```
 
-2. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### 4. Running the Project
+**Start the Backend:**
+```bash
+# In the root directory
+npm run dev
+```
 
-3. **Start the frontend development server:**
-   ```bash
-   npm run dev
-   ```
-   The frontend will usually run on `http://localhost:5173` (or the port shown in your terminal).
+**Start the Frontend:**
+```bash
+# In the /client directory
+cd client
+npm install
+npm run dev
+```
 
-## Tech Stack
-- **Backend:** Node.js, Express, PostgreSQL, JWT, bcryptjs
-- **Frontend:** React, Vite, TypeScript
+---
+
+## 🔐 Evaluation Access (Default Admin)
+Once the database is seeded, use these credentials to access the full system:
+- **Username**: `admin`
+- **Password**: `123456`
+
+## 📸 How to Test Scanning
+1. Go to the **Scan Medicine** tab.
+2. Either use a webcam or click **"Choose File"** to upload a barcode image.
+3. For a quick test, use the code `123` (assigned to Paracetamol 500mg in the demo data).
+
+---
+
+## 🛠 Tech Stack
+- **Frontend**: React, Vite, TypeScript, Vanilla CSS
+- **Backend**: Node.js, Express, PostgreSQL
+- **Scanning**: html5-qrcode
+- **Security**: Bcryptjs, JSONWebToken
+- **I18n**: Custom Localization Engine

@@ -99,11 +99,13 @@ export function MedicineList({ refreshTrigger, onAddNew }: { refreshTrigger: num
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({
-                ...editingMedicine,
                 name: editName,
+                description: editingMedicine.description || null,
                 price: Number(editPrice),
+                expiry_date: editingMedicine.expiry_date || null,
+                prescription: editingMedicine.prescription || false,
                 stock: Number(editStock),
-                barcode: editBarcode
+                barcode: editBarcode.trim() === "" ? null : editBarcode.trim()
             })
         });
 

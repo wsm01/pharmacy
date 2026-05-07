@@ -8,6 +8,7 @@ export function AddMedicine({ onMedicineAdded }: { onMedicineAdded: () => void }
   const [expiryDate, setExpiryDate] = useState("");
   const [prescription, setPrescription] = useState(false);
   const [stock, setStock] = useState("");
+  const [barcode, setBarcode] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault(); 
@@ -20,7 +21,8 @@ export function AddMedicine({ onMedicineAdded }: { onMedicineAdded: () => void }
         description,
         expiry_date: expiryDate === "" ? null : expiryDate, // Fixing the silent database crash
         prescription,
-        stock: Number(stock)
+        stock: Number(stock),
+        barcode: barcode.trim() === "" ? null : barcode.trim()
     };
 
     try {
@@ -40,7 +42,7 @@ export function AddMedicine({ onMedicineAdded }: { onMedicineAdded: () => void }
         }
         
         // Success! Clear the form
-        setName(""); setPrice(""); setDescription(""); setExpiryDate(""); setPrescription(false); setStock("");
+        setName(""); setPrice(""); setDescription(""); setExpiryDate(""); setPrescription(false); setStock(""); setBarcode("");
         onMedicineAdded();
         
     } catch (err) {
@@ -70,6 +72,9 @@ export function AddMedicine({ onMedicineAdded }: { onMedicineAdded: () => void }
         
         <label>{t('initial_stock')}</label>
         <input type="number" placeholder="Enter batch quantity" value={stock} onChange={e => setStock(e.target.value)} required />
+        
+        <label>{t('barcode')}</label>
+        <input type="text" placeholder="Scan or type barcode..." value={barcode} onChange={e => setBarcode(e.target.value)} />
         
         <button type="submit" className="btn btn-primary" style={{width: "100%", marginTop: "10px"}}>
             {t('add_to_inventory')}

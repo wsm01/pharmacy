@@ -145,7 +145,11 @@ app.put('/medicines/:id', async (req, res) => {
 
         res.json(result.rows[0]);
 
-    } catch (err) {
+    } catch (err: any) {
+        if (err.code === '23505') {
+            return res.status(400).send("Error: This barcode is already assigned to another medicine.");
+        }
+        console.error(err);
         res.status(500).send("Error updating medicine");
     }
 });
